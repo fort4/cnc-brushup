@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CNC</title>
+	<!-- Bootstrap 5 CSS -->
+	<link rel="stylesheet" href="/base/css/bootstrap.min.css">
+	<!-- Bootstrap Icons -->
+	<link rel="stylesheet" href="/base/css/bootstrap-icons.css">
+	<!-- Bootstrap 5 JS Bundle -->
+	<script src="/base/js/bootstrap.bundle.min.js"></script>
+	<!-- JQuery -->
+	<script src="/base/js/jquery-3.7.1.min.js"></script>
+	<!-- SweetAlert2 -->
+	<script src="/base/js/sweetalert2.min.js"></script>
+	<!--<link rel="stylesheet" th:href="@{/css/main.css}" />-->
+</head>
+<body>
+
+	<div id="wrapper">
+
+		<!-- 공통헤더 삽입-->
+		<div th:replace="layout/header :: header"></div>
+
+		<!-- 본문 삽입 -->
+		<main th:insert="${viewName} :: content"></main>
+
+		<!-- 공통 푸터 삽입-->
+		<!--<div th:replace="layout/footer :: footer"></div>-->
+
+	</div>
+
+	<!-- 클라이언트 측에서 SweetAlert2를 띄울 수 있는 전역 함수 정의 -->
+	<script src="/js/common/swal.js"></script>
+	<!-- flush 메시지 처리 (백엔드에서 RedirectAttribute로 보낸 내용 처리) -->
+	<script th:inline="javascript">
+		const successMSG = /*[[${successMSG}]]*/ null;
+		const errorMSG = /*[[${errorMSG}]]*/ null;
+		const warnMSG = /*[[${warnMSG}]]*/ null;
+
+		if (successMSG) showAlert("success", "완료", successMSG);
+		if (errorMSG) showAlert("error", "오류", errorMSG);
+		if (warnMSG) showAlert("warning", "주의", warnMSG);
+	</script>
+
+</body>
+</html>
