@@ -1,36 +1,56 @@
 package com.fort4.cnc.domain.board;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fort4.cnc.common.service.FileService;
+import com.fort4.cnc.domain.board.image.BoardImageEntity;
+import com.fort4.cnc.domain.board.image.BoardImageRepo;
 import com.fort4.cnc.domain.member.MemberEntity;
 import com.fort4.cnc.domain.member.MemberRepo;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class BoardService {
 
-    @Autowired
-    private BoardRepo boardRepo;
-    @Autowired
-    private MemberRepo memberRepo;
+    private final BoardRepo boardRepo;
+    private final MemberRepo memberRepo;
+    private final FileService fileService;
+    private final BoardImageRepo boardImgRepo;
 
     // 게시글 저장
-    public void save(BoardDTO dto) {
+    public void save(BoardDTO dto, MultipartFile file) throws IOException {
         MemberEntity writer = memberRepo.findById(dto.getWriterId())
                 .orElseThrow(() -> new NoSuchElementException("작성자 없음"));
         
-        BoardEntity entity = new BoardEntity();
-        entity.setTitle(dto.getTitle());
-        entity.setContent(dto.getContent());
-        entity.setWriter(writer);
-        entity.setCreatedAt(LocalDateTime.now());
+        // 1. 게시글 먼저 저장
+        BoardEntity board = new BoardEntity();
+        board.setTitle(dto.getTitle());
+        board.setContent(dto.getContent());
+        board.setWriter(writer);
+        board.setCreatedAt(LocalDateTime.now());
 
-        boardRepo.save(entity);
+        BoardEntity savedBoard = boardRepo.save(board);
+
+        // 2. 이미지 저장 (파일이 있을 경우만)
+        if (file != null && !file.isEmpty()) {
+            String savedFileName = fileService.saveFile(file);
+
+            BoardImageEntity image = new BoardImageEntity();
+            image.setBoard(savedBoard); // FK 설정
+            image.setFilePath(savedFileName);
+            image.setUploadedAt(LocalDateTime.now());
+
+            boardImgRepo.save(image);
+        }
     }
 
     // 게시글 목록 조회
@@ -57,7 +77,7 @@ public class BoardService {
     public BoardDTO detailById(Long id) {
         BoardEntity entity = boardRepo.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("게시글 없음"));
-
+        
         BoardDTO dto = new BoardDTO();
         dto.setId(entity.getId());
         dto.setTitle(entity.getTitle());
@@ -65,6 +85,11 @@ public class BoardService {
         dto.setWriterId(entity.getWriter().getId());
         dto.setWriterNickname(entity.getWriter().getNickname());
         dto.setCreatedAt(entity.getCreatedAt());
+        
+        List<String> imagePaths = entity.getImages().stream()
+        		.map(BoardImageEntity::getFilePath)
+        		.collect(Collectors.toList());
+        dto.setImagePathList(imagePaths);
         
         return dto;
     }

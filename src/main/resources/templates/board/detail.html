@@ -11,6 +11,14 @@
 	        <p class="text-muted">작성자: <span th:text="${post.writerNickname}">닉네임</span></p>
 	        <p class="text-muted">작성일: <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></span></p>
 	        <hr>
+			<!-- 사진 -->
+			<div th:if="${post.imagePathList != null}">
+			    <div th:each="imgPath : ${post.imagePathList}" class="mb-3">
+			        <img th:src="@{/upload/{file}(file=${imgPath})}"
+			             class="img-thumbnail"
+			             style="max-width: 300px;" />
+			    </div>
+			</div>
 	        <p th:text="${post.content}">본문 내용</p>
 	    </div>
 	</div>

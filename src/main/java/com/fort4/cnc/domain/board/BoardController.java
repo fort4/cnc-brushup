@@ -1,10 +1,8 @@
 package com.fort4.cnc.domain.board;
 
+import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +10,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fort4.cnc.common.controller.RenderController;
@@ -20,20 +20,17 @@ import com.fort4.cnc.domain.board.comment.BoardCommentDTO;
 import com.fort4.cnc.domain.board.comment.BoardCommentService;
 import com.fort4.cnc.domain.member.dto.LoginMemberDTO;
 
+import lombok.RequiredArgsConstructor;
+
 @Controller
 @RequestMapping("/board")
+@RequiredArgsConstructor
 public class BoardController extends RenderController {
 
-    private final BoardRepo boardRepo;
 
-    @Autowired
-    private BoardService boardService;
-    @Autowired
-    private BoardCommentService bcService;
+    private final BoardService boardService;
+    private final BoardCommentService bcService;
 
-    BoardController(BoardRepo boardRepo) {
-        this.boardRepo = boardRepo;
-    }
 
     // 글쓰기 폼
     @GetMapping("/write")
@@ -44,11 +41,10 @@ public class BoardController extends RenderController {
     // 글 작성 처리
     @PostMapping("/write")
     public String writePost(@ModelAttribute BoardDTO dto,
-                            HttpSession session,
-                            RedirectAttributes rAt) {
-
+    						@RequestParam("image") MultipartFile file,
+                            @LoginUser LoginMemberDTO loginUser,
+                            RedirectAttributes rAt) throws IOException {
         // 로그인 유저 확인
-        LoginMemberDTO loginUser = (LoginMemberDTO) session.getAttribute("loginUser");
         if (loginUser == null) {
             rAt.addFlashAttribute("error", "로그인 후 작성할 수 있습니다.");
             return "redirect:/member/login";
@@ -56,7 +52,7 @@ public class BoardController extends RenderController {
 
         dto.setWriterId(loginUser.getId()); // 세션에서 작성자 ID 설정
 
-        boardService.save(dto);
+        boardService.save(dto, file);
         return "redirect:/board/list";
     }
     

@@ -2,7 +2,7 @@
 	
 	<a th:href="@{/board/list}">글목록 으로</a>
 	
-	<form method="post" th:action="@{/board/write}">
+	<form th:action="@{/board/write}" method="post" enctype="multipart/form-data">
 	    <div class="mb-3">
 	        <label>제목</label>
 	        <input type="text" name="title" class="form-control" required>
@@ -11,8 +11,34 @@
 	        <label>내용</label>
 	        <textarea name="content" class="form-control" rows="6" required></textarea>
 	    </div>
-	    <button type="submit" class="btn btn-primary">작성하기</button>
+		<!-- 이미지 -->
+		<input type="file" name="image" accept="image/*" id="imageInput" class="form-control">
+		<!-- 썸네일 미리보기 -->
+		<div id="imagePreview" class="mt-3">
+		    <img id="thumbnail" src="#" class="img-thumbnail" style="max-width: 300px; display: none;">
+		</div>
+		
+	    <button type="submit" class="btn btn-primary">작성</button>
 	</form>
+
+	<script>
+	document.getElementById('imageInput').addEventListener('change', function (e) {
+	    const file = e.target.files[0];
+	    const preview = document.getElementById('thumbnail');
+
+	    if (file && file.type.startsWith('image/')) {
+	        const reader = new FileReader();
+	        reader.onload = function (event) {
+	            preview.src = event.target.result;
+	            preview.style.display = 'block';
+	        };
+	        reader.readAsDataURL(file); // base64로 변환
+	    } else {
+	        preview.style.display = 'none';
+	        preview.src = '';
+	    }
+	});
+	</script>
 
 		
 </div>
