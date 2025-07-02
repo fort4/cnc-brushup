@@ -1,4 +1,4 @@
-package com.fort4.cnc.common;
+package com.fort4.cnc.common.controller;
 
 import org.springframework.ui.Model;
 

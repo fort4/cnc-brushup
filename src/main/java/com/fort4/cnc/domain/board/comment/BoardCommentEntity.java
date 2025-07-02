@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fort4.cnc.domain.board.BoardEntity;
+import com.fort4.cnc.domain.member.MemberEntity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,8 +33,9 @@ public class BoardCommentEntity {
     @JoinColumn(name = "board_id")
     private BoardEntity board;
 
-    @Column(name = "writer_id", nullable = false)
-    private Long writerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_id")
+    private MemberEntity writer;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;

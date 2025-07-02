@@ -14,15 +14,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.fort4.cnc.common.RenderController;
+import com.fort4.cnc.common.controller.RenderController;
+import com.fort4.cnc.common.custom.LoginUser;
+import com.fort4.cnc.domain.board.comment.BoardCommentDTO;
+import com.fort4.cnc.domain.board.comment.BoardCommentService;
 import com.fort4.cnc.domain.member.dto.LoginMemberDTO;
 
 @Controller
 @RequestMapping("/board")
 public class BoardController extends RenderController {
 
+    private final BoardRepo boardRepo;
+
     @Autowired
     private BoardService boardService;
+    @Autowired
+    private BoardCommentService bcService;
+
+    BoardController(BoardRepo boardRepo) {
+        this.boardRepo = boardRepo;
+    }
 
     // 글쓰기 폼
     @GetMapping("/write")
@@ -63,8 +74,10 @@ public class BoardController extends RenderController {
     @GetMapping("/detail/{id}")
     public String detailGET(@PathVariable Long id, Model model)
     {
-    	BoardDTO post = boardService.detailById(id);
-    	model.addAttribute("post", post);
+        BoardDTO post = boardService.detailById(id);
+        List<BoardCommentDTO> commentList = bcService.findByBoardId(id);
+        model.addAttribute("post", post);
+        model.addAttribute("commentList", commentList);
     	
     	return render("board/detail", model);
     }
@@ -77,6 +90,22 @@ public class BoardController extends RenderController {
     	rAt.addFlashAttribute("successMSG", "게시글이 삭제되었습니다.");
     	
     	return "redirect:/board/list";
+    }
+    
+    // 댓글쓰기
+    @PostMapping("/comment/write")
+    public String commentWrite(@LoginUser LoginMemberDTO loginUser,
+    						   @ModelAttribute BoardCommentDTO dto,
+    						   RedirectAttributes rAt) {
+    	
+    	if (loginUser == null) {
+    		rAt.addFlashAttribute("errorMSG", "로그인 후 댓글을 작성할 수 있습니다.");
+    		return "redirect:/member/login";
+    	}
+    	
+        dto.setWriterId(loginUser.getId());
+        bcService.save(dto);
+        return "redirect:/board/detail/" + dto.getBoardId();
     }
     
 }
