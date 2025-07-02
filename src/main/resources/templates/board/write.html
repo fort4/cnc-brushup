@@ -1,0 +1,18 @@
+<div th:fragment="content">
+	
+	<a th:href="@{/board/list}">글목록 으로</a>
+	
+	<form method="post" th:action="@{/board/write}">
+	    <div class="mb-3">
+	        <label>제목</label>
+	        <input type="text" name="title" class="form-control" required>
+	    </div>
+	    <div class="mb-3">
+	        <label>내용</label>
+	        <textarea name="content" class="form-control" rows="6" required></textarea>
+	    </div>
+	    <button type="submit" class="btn btn-primary">작성하기</button>
+	</form>
+
+		
+</div>

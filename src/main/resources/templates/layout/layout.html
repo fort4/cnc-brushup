@@ -17,20 +17,6 @@
 	<!--<link rel="stylesheet" th:href="@{/css/main.css}" />-->
 </head>
 <body>
-
-	<div id="wrapper">
-
-		<!-- 공통헤더 삽입-->
-		<div th:replace="layout/header :: header"></div>
-
-		<!-- 본문 삽입 -->
-		<main th:insert="${viewName} :: content"></main>
-
-		<!-- 공통 푸터 삽입-->
-		<!--<div th:replace="layout/footer :: footer"></div>-->
-
-	</div>
-
 	<!-- 클라이언트 측에서 SweetAlert2를 띄울 수 있는 전역 함수 정의 -->
 	<script src="/js/common/swal.js"></script>
 	<!-- flush 메시지 처리 (백엔드에서 RedirectAttribute로 보낸 내용 처리) -->
@@ -43,6 +29,20 @@
 		if (errorMSG) showAlert("error", "오류", errorMSG);
 		if (warnMSG) showAlert("warning", "주의", warnMSG);
 	</script>
+
+	<div id="wrapper">
+
+		<!-- 공통헤더-->
+		<div th:replace="layout/header :: header"></div>
+
+		<!-- 본문 삽입 -->
+		<main th:insert="${viewName} :: content"></main>
+
+		<!-- 공통 푸터 -->
+		<!--<div th:replace="layout/footer :: footer"></div>-->
+
+	</div>
+
 
 </body>
 </html>

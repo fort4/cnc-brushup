@@ -1,7 +1,22 @@
 <header th:fragment="header">
-	<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm" style="background-color: #e3f2fd;">
-		<div class="container-fluid d-flex justify-content-between align-items-center">
+	<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+		<div class="container-fluid">
 
-		</div> <!--전체 div 끝-->
+			<!-- 브랜드 로고 또는 이름 -->
+			<a class="navbar-brand fw-bold text-primary" th:href="@{/index}">
+				<!--<i class="bi bi-cpu-fill"></i>-->🚀 CNC
+			</a>
+
+			<!-- 로그인/로그아웃 링크 -->
+			<div class="d-flex gap-2">
+				<th:block th:if="${session.loginUser == null}">
+					<a class="btn btn-outline-primary btn-sm" th:href="@{/member/login}">로그인</a>
+				</th:block>
+				<th:block th:unless="${session.loginUser == null}">
+					<a class="btn btn-outline-danger btn-sm" th:href="@{/member/logout}">로그아웃</a>
+				</th:block>
+			</div>
+
+		</div>
 	</nav>
 </header>

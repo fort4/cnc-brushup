@@ -11,22 +11,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.fort4.cnc.common.RenderController;
 import com.fort4.cnc.domain.member.dto.LoginMemberDTO;
 import com.fort4.cnc.domain.member.dto.MemberDTO;
 
 @Controller
 @RequestMapping("/member")
-public class MemberController extends RenderController {
+public class MemberController {
 	
 	@Autowired
 	private MemberService mService;
 
     // 회원가입 폼
     @GetMapping("/signup")
-    public String signupForm(Model model) {
-        return render("member/signup", model);
-    }
+    public String signupGET() { return "member/signup"; }
 
     // 회원가입 처리
     @PostMapping("/signup")
@@ -42,10 +39,7 @@ public class MemberController extends RenderController {
 
     // 로그인 폼
     @GetMapping("/login")
-    public String loginForm(Model model) 
-    {
-        return render("member/login", model);
-    }
+    public String loginGET() { return "member/login"; }
 
     // 로그인 처리
     @PostMapping("/login")
@@ -70,7 +64,7 @@ public class MemberController extends RenderController {
 
     // 로그아웃
     @GetMapping("/logout")
-    public String logout(HttpSession session, RedirectAttributes rAt) 
+    public String logoutGET(HttpSession session, RedirectAttributes rAt) 
     {
         session.invalidate();
         rAt.addFlashAttribute("successMSG", "정상적으로 로그아웃 되었습니다.");

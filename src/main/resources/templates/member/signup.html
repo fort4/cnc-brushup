@@ -1,4 +1,12 @@
-<div th:fragment="content">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>로그인</title>
+</head>
+<body>
+	<div th:if="${errorMSG}">
+		<p th:text="${errorMSG}"></p>
+	</div>
 
 	<form method="post" th:action="@{/member/signup}">
 	    <input type="text" name="nickname" placeholder="닉네임" required>
@@ -7,4 +15,7 @@
 	    <p th:if="${error}" th:text="${error}" style="color:red;"></p>
 	</form>
 
-</div>
+	<a th:href="@{/member/login}">로그인 페이지로</a>
+
+</body>
+</html>
